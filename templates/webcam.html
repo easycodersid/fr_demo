@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+  <style type="text/css">
+    body{
+        background-color:#e6e6ff;
+    }
+    button {
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      background-color:#9f6060;
+      font-family: "Times New Roman";
+      font-size: 19px;
+    }
+    input {
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      font-family: "Times New Roman";
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+       <center>
+        <div id="my_camera" ></div>
+       </center>
+       <br/>
+       <center>
+          <input type="text" placeholder="Enter Name" id = "name" required>
+       </center>
+       <br/>
+       <center>
+        <span id="error" style="color: #b30000;"></span >
+       </center>
+       <br/>
+       <center>
+          <button type=button id="btn" value="Take Snapshot" onClick="take_snapshot()">Take Snapshot</button>
+       </center>
+       <br/>
+       <center>
+        <span id="success" style="color: #000000"></span >
+       </center>
+       <br/>
+<script language="JavaScript">
+// <!-----------------------------------------Set Webcam Properties---------------------------------->
+    Webcam.set({
+        width: 400,
+        height: 400,
+        image_format: 'jpeg',
+        jpeg_quality: 120
+    });
+    Webcam.attach( '#my_camera' );
+// <!---------------------------------------------Click Picture--------------------------------------->
+    function take_snapshot() {
+        Webcam.snap( function(data_uri) {
+          var d = new Date();
+          var milliseconds = d.getTime();
+          console.log(milliseconds)
+          var name = document.getElementById("name").value;
+// <!------------------------------------Validation Code for Name Entered------------------------------>
+          if( name != ""){
+            document.getElementById("error").style.display="none";
+            document.getElementById("success").innerHTML="Picture Clicked !!!";
+            $(".image-tag").val(data_uri);
+            const request = new XMLHttpRequest();
+            request.open("POST", "http://192.168.1.16:5000", true);
+            request.setRequestHeader("Content-Type", "application/json");
+            request.send(JSON.stringify({"content":data_uri,"name":name,"milliseconds":milliseconds}));
+          }
+          else{
+            document.getElementById("error").innerHTML="Please enter your Name !";
+          }
+      });
+    }
+</script>
+</body>
+</html>
